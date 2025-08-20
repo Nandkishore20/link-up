@@ -1,0 +1,9 @@
+const firebaseConfig = {
+    apiKey: "AIzaSyDGi7YdyyYC5TRDHegSUnJSYTUFUtAxy2M",
+    authDomain: "link-up-ffe0e.firebaseapp.com",
+    projectId: "link-up-ffe0e",
+    storageBucket: "link-up-ffe0e.firebasestorage.app",
+    messagingSenderId: "696033053467",
+    appId: "1:696033053467:web:f4f3c55ca5eb3b6a43a1be",
+    measurementId: "G-LEQ3R694NS"
+  };
