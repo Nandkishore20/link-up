@@ -1,57 +1,91 @@
-import React from 'react';
-import { View, Text, StyleSheet, ImageBackground, StatusBar } from 'react-native';
+import React, { useRef } from 'react';
+import { StyleSheet, SafeAreaView, StatusBar, View, TouchableOpacity } from 'react-native';
+import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
+import { Feather } from '@expo/vector-icons';
 
-// A URL for a clean, professional, and lightweight map tile from Stamen Design.
-const MAP_IMAGE_URL = 'https://stamen-tiles.a.ssl.fastly.net/toner-lite/10/515/366.png';
+// A balanced and detailed map style for better readability
+const mapStyle = [{"featureType":"poi.business","stylers":[{"visibility":"off"}]},{"featureType":"road","elementType":"labels.icon","stylers":[{"visibility":"off"}]},{"featureType":"transit","stylers":[{"visibility":"off"}]},{"featureType":"water","elementType":"geometry.fill","stylers":[{"color":"#a1c4fd"}]},{"featureType":"road.highway","elementType":"geometry.fill","stylers":[{"color":"#e0e0e0"}]},{"featureType":"road.highway","elementType":"geometry.stroke","stylers":[{"color":"#c0c0c0"}]},{"featureType":"road.arterial","elementType":"geometry.fill","stylers":[{"color":"#f0f0f0"}]},{"featureType":"road.local","elementType":"geometry.fill","stylers":[{"color":"#ffffff"}]},{"elementType":"labels.text.fill","stylers":[{"color":"#333333"}]},{"elementType":"labels.text.stroke","stylers":[{"color":"#ffffff"},{"weight":2.5}]},{"featureType":"landscape","elementType":"geometry.fill","stylers":[{"color":"#f5f5f5"}]}];
 
 export default function Map() {
+  const mapRef = useRef<MapView>(null);
+
+  // Coordinates for the center of Jaipur
+  const jaipurRegion = {
+    latitude: 26.9124,
+    longitude: 75.7873,
+    latitudeDelta: 0.0922,
+    longitudeDelta: 0.0421,
+  };
+
+  const handleZoom = async (direction: 'in' | 'out') => {
+    const camera = await mapRef.current?.getCamera();
+    if (camera) {
+      camera.zoom += (direction === 'in' ? 1 : -1);
+      mapRef.current?.animateCamera(camera, { duration: 300 });
+    }
+  };
+
   return (
-    <View style={styles.container}>
-      <StatusBar barStyle="light-content" />
-      
-      {/* Use ImageBackground to display the map */}
-      <ImageBackground
-        source={{ uri: MAP_IMAGE_URL }}
-        style={styles.mapBackground}
-        resizeMode="cover"
+    <SafeAreaView style={styles.container}>
+      <StatusBar barStyle="dark-content" />
+      <MapView
+        ref={mapRef}
+        style={styles.map}
+        provider={PROVIDER_GOOGLE}
+        initialRegion={jaipurRegion}
+        customMapStyle={mapStyle}
       >
-        {/* Add a semi-transparent overlay to make the text readable */}
-        <View style={styles.overlay}>
-          <Text style={styles.title}>KYA KARE ISKA</Text>
-          <Text style={styles.subtitle}>.</Text>
-        </View>
-      </ImageBackground>
-    </View>
+        {/* Example Marker */}
+        <Marker
+          coordinate={{ latitude: 26.9124, longitude: 75.7873 }}
+          title="Jaipur"
+          description="The Pink City"
+        />
+      </MapView>
+      
+      {/* Zoom Controls */}
+      <View style={styles.zoomControls}>
+        <TouchableOpacity style={styles.zoomButton} onPress={() => handleZoom('in')}>
+            <Feather name="plus" size={24} color="#1F2937" />
+        </TouchableOpacity>
+        <View style={styles.divider} />
+        <TouchableOpacity style={styles.zoomButton} onPress={() => handleZoom('out')}>
+            <Feather name="minus" size={24} color="#1F2937" />
+        </TouchableOpacity>
+      </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { 
-    flex: 1, 
-    backgroundColor: '#000', // A fallback background color
-  },
-  mapBackground: {
+  container: {
     flex: 1,
-    // Use StyleSheet.absoluteFillObject to ensure it covers the whole screen
+  },
+  map: {
     ...StyleSheet.absoluteFillObject,
   },
-  overlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)', // 50% black overlay
+  zoomControls: {
+    position: 'absolute',
+    bottom: 40,
+    right: 20,
+    backgroundColor: 'white',
+    borderRadius: 24,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  zoomButton: {
+    width: 48,
+    height: 48,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 20,
   },
-  title: { 
-    fontSize: 32, 
-    fontWeight: 'bold',
-    color: 'white',
-    textAlign: 'center',
+  divider: {
+    height: 1,
+    width: '80%',
+    backgroundColor: '#E5E7EB',
+    alignSelf: 'center',
   },
-  subtitle: {
-    fontSize: 16,
-    color: 'rgba(255, 255, 255, 0.8)',
-    marginTop: 8,
-    textAlign: 'center',
-  }
 });

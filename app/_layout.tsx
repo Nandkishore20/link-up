@@ -63,13 +63,18 @@ function RootLayoutNav() {
 
   useEffect(() => {
     if (loading) return;
+
+    const inAuthGroup = segments[0] === "auth";
+    // --- FIX: Added a check to see if the user is in the main tabs group ---
     const inTabsGroup = segments[0] === "tabs";
 
     if (user && !inTabsGroup) {
+      // If the user is signed in and NOT in the tabs group, redirect them there.
+      // This allows free navigation INSIDE the tabs group.
       router.replace("/tabs/discover");
-    } else if (!user) {
-      // If the user is not signed in, route them to the login screen.
-      // This is a robust way to protect routes.
+    } else if (!user && !inAuthGroup) {
+      // If the user is NOT signed in and NOT in the auth group, send them to login.
+      // This allows them to navigate between login and onboarding.
       router.replace("/auth/login");
     }
   }, [user, loading, segments]);
@@ -82,6 +87,8 @@ function RootLayoutNav() {
     </Stack>
   );
 }
+
+
 
 export default function RootLayout() {
   return (

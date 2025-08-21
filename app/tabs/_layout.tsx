@@ -33,6 +33,13 @@ export default function TabsLayout() {
           tabBarIcon: ({ color, size }) => <Feather name="message-circle" size={size} color={color} />,
         }}
       />
+      <Tabs.Screen
+        name="profile" 
+        options={{
+          title: 'Profile',
+          tabBarIcon: ({ color, size }) => <Feather name="user" size={size} color={color} />,
+        }}
+      />
     </Tabs>
   );
 }
