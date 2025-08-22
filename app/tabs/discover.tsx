@@ -179,13 +179,11 @@ export default function Discover() {
     if (!user) return;
     const waveId = `${user.uid}_${otherUser.uid}`;
     await setDoc(doc(FIREBASE_DB, 'waves', waveId), { from: user.uid, to: otherUser.uid, status: 'pending', createdAt: new Date() });
-    LayoutAnimation.configureNext(CustomLayoutAnimation.smooth);
     setActiveUserId(null);
   };
   
   const handleCardPress = (item: AppUser, index: number) => {
     if (Platform.OS === 'ios') Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    LayoutAnimation.configureNext(CustomLayoutAnimation.smooth);
     setActiveUserId(activeUserId === item.uid ? null : item.uid);
     setTimeout(() => flatListRef.current?.scrollToIndex({ animated: true, index, viewPosition: 0.3 }), 100);
   };
@@ -249,7 +247,7 @@ export default function Discover() {
 
 // --- STYLES ---
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#F8FAFF" },
+  container: { flex: 1, backgroundColor: "#F8FAFF",marginTop: 20, },
   loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 32 },
   loadingText: { marginTop: 20, fontSize: 18, fontWeight: '600', color: "#1F2937" },
   header: { paddingHorizontal: 24, paddingTop: 12, paddingBottom: 16, borderBottomWidth: 1, borderBottomColor: 'rgba(229, 231, 235, 0.6)', zIndex: 100 },

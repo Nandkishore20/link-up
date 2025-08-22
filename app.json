@@ -1,48 +1,19 @@
 {
   "expo": {
-    "name": "link-up",
-    "slug": "link-up",
+    "name": "LinkUP",
+    "slug": "my-awesome-app",
     "version": "1.0.0",
-    "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
-    "scheme": "linkup",
-    "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
-    "ios": {
-      "supportsTablet": true
-    },
     "android": {
+      "package": "com.company.awesomeapp",
+      "versionCode": 1,
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
-      },
-      "edgeToEdgeEnabled": true,
-      "package": "com.nandkishor0020.linkup"
-    },
-    "web": {
-      "bundler": "metro",
-      "output": "static",
-      "favicon": "./assets/images/favicon.png"
-    },
-    "plugins": [
-      "expo-router",
-      [
-        "expo-splash-screen",
-        {
-          "image": "./assets/images/splash-icon.png",
-          "imageWidth": 200,
-          "resizeMode": "contain",
-          "backgroundColor": "#ffffff"
-        }
-      ]
-    ],
-    "experiments": {
-      "typedRoutes": true
+        "backgroundColor": "#FFFFFF"
+      }
     },
     "extra": {
-      "router": {},
       "eas": {
-        "projectId": "b0cf637f-fef7-46b9-91df-5e194c522563"
+        "projectId": "deb7ac92-00e3-4ea9-9a7c-00aeabee4e93"
       }
     }
   }

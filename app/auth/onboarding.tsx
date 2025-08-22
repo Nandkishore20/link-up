@@ -81,7 +81,7 @@ export default function Onboarding() {
       const cred = await createUserWithEmailAndPassword(FIREBASE_AUTH, form.email.trim(), form.password);
       const user = cred.user;
 
-      const avatar = form.avatarUrl?.trim() || `https://api.dicebear.com/8.x/initials/png?seed=${encodeURIComponent(form.fullName)}`;
+      const avatar = form.avatarUrl?.trim() || `https://api.dicebear.com/9.x/lorelei/png?seed=${encodeURIComponent(form.fullName)}`;
       try {
         await updateProfile(user, {
           displayName: form.displayName || form.fullName,

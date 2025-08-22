@@ -125,7 +125,7 @@ export default function ChatList() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: 'white', paddingTop: 60 },
+  container: { flex: 1, backgroundColor: 'white', paddingTop: 50, paddingBottom:50 },
   title: { fontSize: 32, fontWeight: 'bold', paddingHorizontal: 20, marginBottom: 20 },
   sectionHeader: { fontSize: 16, fontWeight: '600', color: 'gray', backgroundColor: '#F8FAFF', paddingVertical: 8, paddingHorizontal: 20 },
   chatItem: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20, paddingVertical: 12 },
