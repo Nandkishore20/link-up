@@ -1,6 +1,6 @@
 // constants/Colors.ts
-export const tintColorLight = '#6366F1';
-export const tintColorDark = '#A5B4FC';
+export const tintColorLight = '#162660';
+export const tintColorDark = '#D0E6FD';
 
 export const Colors = {
   light: {
@@ -12,9 +12,10 @@ export const Colors = {
     tabIconSelected: tintColorLight,
     card: '#FFFFFF',
     border: '#E5E7EB',
-    primary: '#6366F1',
-    secondary: '#FF0066',
-    myMessage: '#6366F1',
+    primary: '#162660',
+    secondary: '#D0E6FD',
+    tertiary: '#F1E4D1',
+    myMessage: '#162660',
     theirMessage: '#FFFFFF',
     inputBackground: '#F3F4F6',
   },
@@ -27,9 +28,10 @@ export const Colors = {
     tabIconSelected: tintColorDark,
     card: '#1F2937',
     border: '#374151',
-    primary: '#A5B4FC',
-    secondary: '#F9A8D4',
-    myMessage: '#4F46E5',
+    primary: '#D0E6FD',
+    secondary: '#162660',
+    tertiary: '#F1E4D1',
+    myMessage: '#D0E6FD',
     theirMessage: '#374151',
     inputBackground: '#374151',
   },

@@ -96,7 +96,7 @@ export default function ChatScreen() {
 }
 
 const createStyles = (colors: any) => StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.background,marginTop:20, },
+  container: { flex: 1, backgroundColor: colors.background },
   header: { flexDirection: 'row', alignItems: 'center', paddingVertical: 12, paddingHorizontal: 16, borderBottomWidth: 1, borderBottomColor: colors.border, backgroundColor: colors.card },
   headerTitle: { fontSize: 18, fontWeight: '600', marginLeft: 16, color: colors.text },
   listContentContainer: { paddingHorizontal: 10, paddingTop: 10 },

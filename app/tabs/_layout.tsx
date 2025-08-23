@@ -3,10 +3,12 @@ import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { Tabs, useSegments } from 'expo-router';
 import React from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../context/ThemeContext';
 
 const CustomTabBar = ({ state, descriptors, navigation }: BottomTabBarProps) => {
   const { colors, theme } = useTheme();
+  const insets = useSafeAreaInsets();
 
   // The COLORS object is now inside the component to access theme properties
   const COLORS = {
@@ -17,7 +19,7 @@ const CustomTabBar = ({ state, descriptors, navigation }: BottomTabBarProps) => 
   };
 
   return (
-    <View style={styles.tabBarContainer}>
+    <View style={[styles.tabBarContainer, { bottom: insets.bottom + 7 }]}>
       <View style={[styles.tabBar, { backgroundColor: COLORS.background, shadowColor: theme === 'dark' ? '#000' : '#2d2c2cff' }]}>
         {state.routes.map((route, index) => {
           const { options } = descriptors[route.key];
@@ -84,7 +86,6 @@ export default function TabLayout() {
 const styles = StyleSheet.create({
   tabBarContainer: {
     position: 'absolute',
-    bottom: 7,
     left: 16,
     right: 16,
     elevation: 5,

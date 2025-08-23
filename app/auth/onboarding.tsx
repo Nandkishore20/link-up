@@ -5,6 +5,7 @@ import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { doc, serverTimestamp, setDoc } from "firebase/firestore";
 import React, { useState } from "react";
 import { ActivityIndicator, Alert, LayoutAnimation, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, UIManager, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 // Enable LayoutAnimation on Android
 if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
@@ -31,6 +32,7 @@ type OnboardForm = {
 
 export default function Onboarding() {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const [step, setStep] = useState<number>(1);
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState<OnboardForm>({
@@ -134,9 +136,9 @@ export default function Onboarding() {
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="handled">
-      <View style={styles.header}>
+      <View style={[styles.header, { paddingTop: insets.top + 20 }]}>
         {step > 1 && (
-          <TouchableOpacity onPress={prevStep} style={styles.backButton}>
+          <TouchableOpacity onPress={prevStep} style={[styles.backButton, { top: insets.top + 15 }]}>
             <Feather name="chevron-left" size={28} color="#111827" />
           </TouchableOpacity>
         )}
@@ -207,7 +209,7 @@ export default function Onboarding() {
         </TouchableOpacity>
         
         <TouchableOpacity onPress={() => router.replace("/auth/login")} style={{ marginTop: 24 }}>
-          <Text style={styles.footerText}>Already have an account? <Text style={{fontWeight: 'bold', color: '#FF0066'}}>Log In</Text></Text>
+          <Text style={styles.footerText}>Already have an account? <Text style={{fontWeight: 'bold', color: '#162660'}}>Log In</Text></Text>
         </TouchableOpacity>
       </View>
     </ScrollView>
@@ -217,17 +219,30 @@ export default function Onboarding() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#FFFFFF" },
-  header: { paddingTop: 60, paddingHorizontal: 20 },
-  backButton: { position: 'absolute', top: 55, left: 15, zIndex: 10, padding: 5 },
+  header: { paddingHorizontal: 20 },
+  backButton: { position: 'absolute', left: 15, zIndex: 10, padding: 5 },
   progressContainer: { height: 8, backgroundColor: '#F0F0F0', borderRadius: 4, overflow: 'hidden' },
-  progressBar: { height: '100%', backgroundColor: '#FF0066', borderRadius: 4 },
+  progressBar: { height: '100%', backgroundColor: '#162660', borderRadius: 4 },
   content: { flex: 1, padding: 25, justifyContent: 'center' },
   footer: { padding: 25, paddingBottom: 40 },
-  title: { fontSize: 28, fontWeight: 'bold', color: '#111827', marginBottom: 10 },
+  title: { fontSize: 28, fontWeight: 'bold', color: '#162660', marginBottom: 10 },
   subtitle: { fontSize: 16, color: '#6B7280', marginBottom: 24 },
   label: { fontSize: 14, fontWeight: '500', color: '#374151', marginBottom: 8, marginTop: 16 },
-  input: { height: 50, backgroundColor: "#F3F4F6", borderRadius: 12, paddingHorizontal: 16, fontSize: 16, borderWidth: 1, borderColor: '#E5E7EB' },
-  button: { backgroundColor: "#FF0066", height: 52, borderRadius: 12, alignItems: 'center', justifyContent: 'center', shadowColor: "#FF0066", shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 6, elevation: 5 },
+  input: { height: 50, backgroundColor: "#F3F4F6", borderRadius: 12, paddingHorizontal: 16, fontSize: 16, borderWidth: 1, borderColor: '#D0E6FD' },
+  button: { 
+    backgroundColor: "#162660", 
+    height: 56, 
+    borderRadius: 12, 
+    alignItems: 'center', 
+    justifyContent: 'center', 
+    shadowColor: "#162660", 
+    shadowOffset: { width: 0, height: 4 }, 
+    shadowOpacity: 0.3, 
+    shadowRadius: 6, 
+    elevation: 5,
+    paddingVertical: 0,
+    paddingHorizontal: 0,
+  },
   buttonText: { color: "white", fontWeight: 'bold', fontSize: 16 },
   footerText: { color: "#6B7280", textAlign: 'center' },
   smallText: { color: "#6B7280", fontSize: 13, textAlign: 'center', marginTop: 12 },
@@ -235,8 +250,8 @@ const styles = StyleSheet.create({
   interestCategory: { marginBottom: 20 },
   categoryTitle: { fontSize: 16, fontWeight: '600', color: '#374151', marginBottom: 12 },
   interestGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
-  interestChip: { paddingHorizontal: 16, paddingVertical: 10, borderRadius: 20, backgroundColor: '#F3F4F6', borderWidth: 1, borderColor: '#E5E7EB' },
-  interestChipSelected: { backgroundColor: '#FFF0F7', borderColor: '#FF0066' },
+  interestChip: { paddingHorizontal: 16, paddingVertical: 10, borderRadius: 20, backgroundColor: '#F3F4F6', borderWidth: 1, borderColor: '#D0E6FD' },
+  interestChipSelected: { backgroundColor: '#F1E4D1', borderColor: '#162660' },
   interestText: { color: '#374151', fontWeight: '500' },
-  interestTextSelected: { color: '#FF0066' },
+  interestTextSelected: { color: '#162660' },
 });
