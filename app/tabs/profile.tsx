@@ -1,9 +1,22 @@
-import React from "react";
-import { View, Text, StyleSheet, Image, TouchableOpacity, Animated, SafeAreaView, Alert, ActivityIndicator } from "react-native";
-import { signOut } from "firebase/auth";
 import { FIREBASE_AUTH } from "@/firebaseConfig";
-import { useAuth } from "../_layout";
 import { Feather } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
+import { signOut } from "firebase/auth";
+import React from "react";
+import {
+  ActivityIndicator,
+  Alert,
+  Animated,
+  Image,
+  SafeAreaView,
+  StyleSheet,
+  Switch,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { useAuth } from "../context/AuthContext";
+import { useTheme } from "../context/ThemeContext";
 
 const HEADER_MAX_HEIGHT = 280;
 const HEADER_MIN_HEIGHT = 110;
@@ -11,17 +24,11 @@ const HEADER_SCROLL_DISTANCE = HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT;
 
 export default function Profile() {
   const { user } = useAuth();
+  const { theme, toggleTheme, colors } = useTheme();
+  const router = useRouter();
   const scrollY = React.useRef(new Animated.Value(0)).current;
 
-  if (!user) {
-    return (
-      <SafeAreaView style={styles.container}>
-        <ActivityIndicator style={{ flex: 1 }} />
-      </SafeAreaView>
-    );
-  }
-  
-  // --- Animation Interpolations ---
+  // Animation interpolations
   const headerTranslateY = scrollY.interpolate({
     inputRange: [0, HEADER_SCROLL_DISTANCE],
     outputRange: [0, -HEADER_SCROLL_DISTANCE],
@@ -64,69 +71,85 @@ export default function Profile() {
   };
   
   const handleEdit = () => {
-    Alert.alert("Edit Profile", "This feature is coming soon!");
+    router.push('/profile/edit');
   };
 
+  if (!user) {
+    return (
+      <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+        <ActivityIndicator style={{ flex: 1 }} color={colors.primary} />
+      </SafeAreaView>
+    );
+  }
+
   return (
-    <SafeAreaView style={styles.container}>
-      {/* --- Collapsing Header --- */}
-      <Animated.View style={[styles.header, { transform: [{ translateY: headerTranslateY }] }]}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+      <Animated.View style={[styles.header, { backgroundColor: colors.card, transform: [{ translateY: headerTranslateY }] }]}>
         <Animated.View style={[styles.avatarContainer, { transform: [{ scale: imageScale }, { translateY: imageTranslateY }] }]}>
           <Image source={{ uri: user.avatarUrl }} style={styles.avatar} />
         </Animated.View>
       </Animated.View>
       
-      {/* --- Compact Header (Appears on scroll) --- */}
       <Animated.View style={[styles.compactHeader, { opacity: compactHeaderOpacity }]}>
-        <View style={styles.compactHeaderBackground} />
-        <Text style={styles.compactHeaderName}>{user.displayName}</Text>
-        <TouchableOpacity style={styles.headerButton} onPress={handleEdit}>
-            <Feather name="edit-3" size={20} color="#1F2937" />
+        <View style={[styles.compactHeaderBackground, { backgroundColor: `${colors.card}e6` , borderBottomColor: colors.border }]} />
+        <Text style={[styles.compactHeaderName, { color: colors.text }]}>{user.displayName}</Text>
+        <TouchableOpacity style={[styles.headerButton, { backgroundColor: colors.inputBackground, borderColor: colors.border }]} onPress={handleEdit}>
+            <Feather name="edit-3" size={20} color={colors.text} />
         </TouchableOpacity>
       </Animated.View>
 
       <Animated.ScrollView
-        contentContainerStyle={{ paddingTop: HEADER_MAX_HEIGHT, paddingBottom: 40 }}
+        contentContainerStyle={{ paddingTop: HEADER_MAX_HEIGHT, paddingBottom: 100 }}
         scrollEventThrottle={16}
         showsVerticalScrollIndicator={false}
         onScroll={Animated.event([{ nativeEvent: { contentOffset: { y: scrollY } } }], { useNativeDriver: true })}
       >
         <View style={styles.profileInfoContainer}>
-            <Animated.View style={{ opacity: nameOpacity }}>
-                <Text style={styles.name}>{user.displayName}</Text>
-                <Text style={styles.location}>{user.location || "Location not set"}</Text>
+            <Animated.View style={{ opacity: nameOpacity, alignItems: 'center' }}>
+                <Text style={[styles.name, { color: colors.text }]}>{user.displayName}</Text>
+                <Text style={[styles.location, { color: colors.icon }]}>{user.location || "Location not set"}</Text>
             </Animated.View>
+        </View>
 
-            {/* Social Stats */}
-            <View style={styles.statsContainer}>
+        <View style={[styles.section, { paddingHorizontal: 24 }]}>
+            <Text style={[styles.sectionTitle, { color: colors.text }]}>Settings</Text>
+            <View style={[styles.settingRow, { backgroundColor: colors.card, borderColor: colors.border }]}>
+              <Feather name={theme === 'dark' ? 'moon' : 'sun'} size={20} color={colors.text} />
+              <Text style={[styles.settingText, { color: colors.text }]}>Dark Mode</Text>
+              <Switch
+                value={theme === 'dark'}
+                onValueChange={toggleTheme}
+                trackColor={{ false: '#767577', true: colors.primary }}
+                thumbColor={colors.card}
+              />
             </View>
         </View>
 
-        {/* Bio Section */}
         <View style={styles.section}>
-            <Text style={styles.sectionTitle}>About Me</Text>
-            <Text style={styles.sectionContent}>{user.bio || "No bio yet. Tap 'Edit Profile' to add one!"}</Text>
+            <Text style={[styles.sectionTitle, { color: colors.text }]}>About Me</Text>
+            <Text style={[styles.sectionContent, { color: colors.text }]}>{user.bio || "No bio yet. Tap 'Edit Profile' to add one!"}</Text>
         </View>
 
-        {/* Interests Section */}
         <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Interests</Text>
+            <Text style={[styles.sectionTitle, { color: colors.text }]}>Interests</Text>
             <View style={styles.tagRow}>
               {(user.interests || []).map((interest) => (
-                <View key={interest} style={styles.interestTag}><Text style={styles.interestTagText}>{interest}</Text></View>
+                <View key={interest} style={[styles.interestTag, { backgroundColor: `${colors.primary}20`, borderColor: `${colors.primary}80` }]}>
+                    <Text style={[styles.interestTagText, { color: colors.primary }]}>{interest}</Text>
+                </View>
               ))}
             </View>
         </View>
         
-        {/* Actions Section */}
         <View style={styles.section}>
-            <TouchableOpacity style={styles.editButton} onPress={handleEdit}>
+            <TouchableOpacity style={[styles.actionButton, styles.editButton]} >  
+              {/* onPress={handleEdit} */}
                 <Feather name="edit-2" size={16} color="#FF0066" />
-                <Text style={styles.editButtonText}>Edit Profile</Text>
+                <Text style={[styles.actionButtonText, styles.editButtonText]}>Edit Profile</Text>
             </TouchableOpacity>
-             <TouchableOpacity style={styles.logoutButton} onPress={handleSignOut}>
+             <TouchableOpacity style={[styles.actionButton, styles.logoutButton]} onPress={handleSignOut}>
                 <Feather name="log-out" size={16} color="#EF4444" />
-                <Text style={styles.logoutButtonText}>Log Out</Text>
+                <Text style={[styles.actionButtonText, styles.logoutButtonText]}>Log Out</Text>
             </TouchableOpacity>
         </View>
       </Animated.ScrollView>
@@ -135,35 +158,139 @@ export default function Profile() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#F8FAFF" },
-  header: { position: 'absolute', top: 0, left: 0, right: 0, height: HEADER_MAX_HEIGHT, backgroundColor: '#FFFFFF', alignItems: 'center', zIndex: 1, overflow: 'hidden' },
-  avatarContainer: { width: '100%', height: '100%' },
-  avatar: { width: '100%', height: '100%', resizeMode: 'cover' },
-  
-  compactHeader: { position: 'absolute', top: 0, left: 0, right: 0, height: HEADER_MIN_HEIGHT, flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-between', paddingHorizontal: 24, paddingBottom: 16, zIndex: 2 },
-  compactHeaderBackground: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(255, 255, 255, 0.85)', borderBottomWidth: 1, borderBottomColor: 'rgba(229, 231, 235, 0.5)' },
-  compactHeaderName: { fontSize: 20, fontWeight: 'bold', color: '#111827' },
-  headerButton: { width: 40, height: 40, borderRadius: 20, backgroundColor: 'rgba(243, 244, 246, 0.9)', justifyContent: 'center', alignItems: 'center', borderWidth: 1, borderColor: 'rgba(229, 231, 235, 0.7)' },
-
-  profileInfoContainer: { paddingHorizontal: 24, alignItems: 'center', marginTop: -80, zIndex: 3 },
-  name: { fontSize: 32, fontWeight: "bold", color: '#1F2937' },
-  location: { fontSize: 16, color: '#4B5563', marginTop: 4 },
-  
-  statsContainer: { flexDirection: 'row', justifyContent: 'space-around', width: '100%', marginTop: 24, borderRadius: 16, padding: 20},
-  statItem: { alignItems: 'center' },
-  statNumber: { fontSize: 20, fontWeight: 'bold', color: '#1F2937' },
-  statLabel: { fontSize: 13, color: '#6B7280', marginTop: 4 },
-
-  section: { marginTop: 24, paddingHorizontal: 24, paddingBottom: 12 },
-  sectionTitle: { fontSize: 20, fontWeight: 'bold', color: '#111827', marginBottom: 16 },
-  sectionContent: { fontSize: 16, color: '#374151', lineHeight: 24 },
-  
-  tagRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
-  interestTag: { backgroundColor: '#FFF0F7', borderWidth: 1, borderColor: '#FFADDD', paddingHorizontal: 16, paddingVertical: 8, borderRadius: 20 },
-  interestTagText: { color: '#86198F', fontSize: 14, fontWeight: '600' },
-  
-  editButton: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: '#FFF0F7', paddingVertical: 14, borderRadius: 12, borderWidth: 1, borderColor: '#FFADDD', marginBottom: 12 },
-  editButtonText: { color: '#FF0066', fontSize: 16, fontWeight: '600', marginLeft: 8 },
-  logoutButton: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: '#FEF2F2', paddingVertical: 14, borderRadius: 12, borderWidth: 1, borderColor: '#FECACA' },
-  logoutButtonText: { color: '#EF4444', fontSize: 16, fontWeight: '600', marginLeft: 8 },
+  container: { 
+    flex: 1,
+  },
+  header: { 
+    position: 'absolute', 
+    top: 0, 
+    left: 0, 
+    right: 0, 
+    height: HEADER_MAX_HEIGHT, 
+    alignItems: 'center', 
+    zIndex: 1, 
+    overflow: 'hidden',
+  },
+  avatarContainer: { 
+    width: '100%', 
+    height: '100%',
+    
+  },
+  avatar: { 
+    width: '100%', 
+    height: '100%', 
+    resizeMode: 'cover',
+  },
+  compactHeader: { 
+    position: 'absolute', 
+    top: 0, 
+    left: 0, 
+    right: 0, 
+    height: HEADER_MIN_HEIGHT, 
+    flexDirection: 'row', 
+    alignItems: 'flex-end', 
+    justifyContent: 'space-between', 
+    paddingHorizontal: 24, 
+    paddingBottom: 16, 
+    zIndex: 2,
+  },
+  compactHeaderBackground: { 
+    ...StyleSheet.absoluteFillObject, 
+    borderBottomWidth: 1,
+  },
+  compactHeaderName: { 
+    fontSize: 20, 
+    fontWeight: 'bold',
+  },
+  headerButton: { 
+    width: 40, 
+    height: 40, 
+    borderRadius: 20, 
+    justifyContent: 'center', 
+    alignItems: 'center', 
+    borderWidth: 1,
+  },
+  profileInfoContainer: { 
+    paddingHorizontal: 24, 
+    alignItems: 'center', 
+    marginTop: -80, 
+    zIndex: 3,
+  },
+  name: { 
+    fontSize: 32, 
+    fontWeight: "bold",
+  },
+  location: { 
+    fontSize: 16, 
+    marginTop: 4,
+  },
+  section: { 
+    marginTop: 24, 
+    paddingHorizontal: 24, 
+    paddingBottom: 12,
+  },
+  sectionTitle: { 
+    fontSize: 20, 
+    fontWeight: 'bold', 
+    marginBottom: 16,
+  },
+  sectionContent: { 
+    fontSize: 16, 
+    lineHeight: 24,
+  },
+  tagRow: { 
+    flexDirection: 'row', 
+    flexWrap: 'wrap', 
+    gap: 10,
+  },
+  interestTag: { 
+    paddingHorizontal: 16, 
+    paddingVertical: 8, 
+    borderRadius: 20, 
+    borderWidth: 1,
+  },
+  interestTagText: { 
+    fontSize: 14, 
+    fontWeight: '600',
+  },
+  actionButton: { 
+    flexDirection: 'row', 
+    alignItems: 'center', 
+    justifyContent: 'center', 
+    paddingVertical: 14, 
+    borderRadius: 12, 
+    borderWidth: 1, 
+    marginBottom: 12,
+  },
+  actionButtonText: { 
+    fontSize: 16, 
+    fontWeight: '600', 
+    marginLeft: 8,
+  },
+  editButton: { 
+    backgroundColor: '#FFF0F7', 
+    borderColor: '#FFADDD',
+  },
+  editButtonText: { 
+    color: '#FF0066',
+  },
+  logoutButton: { 
+    backgroundColor: '#FEF2F2', 
+    borderColor: '#FECACA',
+  },
+  logoutButtonText: { 
+    color: '#EF4444',
+  },
+  settingRow: { 
+    flexDirection: 'row', 
+    alignItems: 'center', 
+    padding: 16, 
+    borderRadius: 12, 
+    borderWidth: 1,
+  },
+  settingText: { 
+    fontSize: 16, 
+    marginLeft: 16, 
+    flex: 1,
+  },
 });

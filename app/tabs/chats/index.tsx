@@ -1,12 +1,15 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet, Image, ActivityIndicator, SectionList } from 'react-native';
-import { collection, query, where, onSnapshot, getDoc, doc, setDoc, serverTimestamp, deleteDoc } from 'firebase/firestore';
+// app/tabs/chats/index.tsx
+import { AppUser, useAuth } from '@/app/context/AuthContext';
+import { useTheme } from '@/app/context/ThemeContext';
 import { FIREBASE_DB } from '@/firebaseConfig';
-import { useAuth, AppUser } from '../../_layout';
 import { useRouter } from 'expo-router';
+import { collection, deleteDoc, doc, getDoc, onSnapshot, query, serverTimestamp, setDoc, where } from 'firebase/firestore';
+import React, { useEffect, useState } from 'react';
+import { ActivityIndicator, Image, SafeAreaView, SectionList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 export default function ChatList() {
   const { user } = useAuth();
+  const { colors } = useTheme();
   const router = useRouter();
   const [incomingWaves, setIncomingWaves] = useState<any[]>([]);
   const [chats, setChats] = useState<any[]>([]);
@@ -58,21 +61,18 @@ export default function ChatList() {
     if (!user) return;
     const otherUser = wave.fromUser;
     
-    // Create a new chat
     const chatId = [user.uid, otherUser.uid].sort().join('_');
     const chatDocRef = doc(FIREBASE_DB, 'chats', chatId);
     await setDoc(chatDocRef, {
       participants: [user.uid, otherUser.uid],
       createdAt: serverTimestamp(),
-    });
+    }, { merge: true });
 
-    // Delete the wave notification
     await deleteDoc(doc(FIREBASE_DB, 'waves', wave.waveId));
 
-    // Navigate to the newly created chat
     router.push({
       pathname: `/tabs/chats/${chatId}`,
-      params: { otherUserName: otherUser.displayName, otherUserAvatar: otherUser.avatarUrl, otherUserId: otherUser.uid }
+      params: { otherUserName: otherUser.displayName }
     });
   };
   
@@ -81,23 +81,25 @@ export default function ChatList() {
     { title: 'Conversations', data: chats },
   ];
 
+  const styles = createStyles(colors);
+
   if (loading) {
-    return <View style={styles.container}><ActivityIndicator size="large" color="#4F46E5" /></View>;
+    return <View style={styles.container}><ActivityIndicator size="large" color={colors.primary} /></View>;
   }
   
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <Text style={styles.title}>Messages</Text>
       <SectionList
         sections={sections}
-        keyExtractor={(item, index) => item.chatId || item.waveId + index}
+        keyExtractor={(item) => item.chatId || item.waveId}
         renderItem={({ item, section }) => {
             if (section.title === 'Incoming Waves') {
                 return (
                     <View style={styles.waveItem}>
                         <Image source={{ uri: item.fromUser.avatarUrl }} style={styles.avatar} />
                         <View style={styles.waveInfo}>
-                           <Text><Text style={{fontWeight: 'bold'}}>{item.fromUser.displayName}</Text> waved at you!</Text>
+                           <Text style={styles.waveText}><Text style={{fontWeight: 'bold'}}>{item.fromUser.displayName}</Text> waved at you!</Text>
                         </View>
                         <TouchableOpacity style={styles.waveBackButton} onPress={() => handleAcceptWave(item)}>
                             <Text style={styles.waveBackButtonText}>Wave Back</Text>
@@ -106,7 +108,7 @@ export default function ChatList() {
                 )
             }
             return (
-              <TouchableOpacity style={styles.chatItem} onPress={() => router.push({ pathname: `/tabs/chats/${item.chatId}`, params: { otherUserName: item.otherUser.displayName, otherUserAvatar: item.otherUser.avatarUrl, otherUserId: item.otherUser.uid }})}>
+              <TouchableOpacity style={styles.chatItem} onPress={() => router.push({ pathname: `/tabs/chats/${item.chatId}`, params: { otherUserName: item.otherUser.displayName }})}>
                 <Image source={{ uri: item.otherUser.avatarUrl }} style={styles.avatar} />
                 <View style={styles.chatInfo}>
                   <Text style={styles.userName}>{item.otherUser.displayName}</Text>
@@ -120,22 +122,23 @@ export default function ChatList() {
         )}
         ListEmptyComponent={<Text style={styles.emptyText}>No messages or waves yet.</Text>}
       />
-    </View>
+    </SafeAreaView>
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: 'white', paddingTop: 50, paddingBottom:50 },
-  title: { fontSize: 32, fontWeight: 'bold', paddingHorizontal: 20, marginBottom: 20 },
-  sectionHeader: { fontSize: 16, fontWeight: '600', color: 'gray', backgroundColor: '#F8FAFF', paddingVertical: 8, paddingHorizontal: 20 },
+const createStyles = (colors: any) => StyleSheet.create({
+  container: { flex: 1, backgroundColor: colors.background,marginTop:20 },
+  title: { fontSize: 32, fontWeight: 'bold', paddingHorizontal: 20, marginBottom: 20, color: colors.text },
+  sectionHeader: { fontSize: 16, fontWeight: '600', color: colors.icon, backgroundColor: colors.background, paddingVertical: 8, paddingHorizontal: 20 },
   chatItem: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20, paddingVertical: 12 },
   avatar: { width: 56, height: 56, borderRadius: 28 },
   chatInfo: { flex: 1, marginLeft: 12 },
-  userName: { fontSize: 16, fontWeight: '600' },
-  lastMessage: { color: 'gray', marginTop: 4 },
-  emptyText: { textAlign: 'center', marginTop: 50, color: 'gray' },
-  waveItem: { flexDirection: 'row', alignItems: 'center', padding: 12, marginHorizontal: 20, marginBottom: 10, backgroundColor: '#EFF6FF', borderRadius: 12 },
+  userName: { fontSize: 16, fontWeight: '600', color: colors.text },
+  lastMessage: { color: colors.icon, marginTop: 4 },
+  emptyText: { textAlign: 'center', marginTop: 50, color: colors.icon },
+  waveItem: { flexDirection: 'row', alignItems: 'center', padding: 12, marginHorizontal: 20, marginBottom: 10, backgroundColor: colors.card, borderRadius: 12 },
   waveInfo: { flex: 1, marginLeft: 12 },
-  waveBackButton: { backgroundColor: '#4F46E5', paddingVertical: 8, paddingHorizontal: 12, borderRadius: 8 },
+  waveText: { color: colors.text },
+  waveBackButton: { backgroundColor: colors.primary, paddingVertical: 8, paddingHorizontal: 12, borderRadius: 8 },
   waveBackButtonText: { color: 'white', fontWeight: '600' },
 });

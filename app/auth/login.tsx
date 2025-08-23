@@ -1,19 +1,19 @@
 // app/auth/login.tsx
+import { useRouter } from "expo-router";
+import { signInWithEmailAndPassword } from "firebase/auth";
 import React, { useState } from "react";
 import {
-  View,
-  TextInput,
-  Text,
-  TouchableOpacity,
-  Alert,
   ActivityIndicator,
-  StyleSheet,
+  Alert,
+  Dimensions,
   KeyboardAvoidingView,
   Platform,
-  Dimensions,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
-import { useRouter } from "expo-router";
 import { FIREBASE_AUTH } from "../../firebaseConfig"; // adjust path if your alias differs
 
 const { width } = Dimensions.get('window');

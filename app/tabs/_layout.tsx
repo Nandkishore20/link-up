@@ -1,46 +1,36 @@
 import { Feather } from '@expo/vector-icons';
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
-import { Tabs } from 'expo-router';
+import { Tabs, useSegments } from 'expo-router';
 import React from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { useTheme } from '../context/ThemeContext';
 
-// --- Your App's Theme Colors ---
-const COLORS = {
-  primary: '#6366F1',     // Active icon and tint color
-  inactive: '#9CA3AF',    // Inactive icon color
-  background: '#202838c2',  // Floating tab bar background
-  activeBackground: '#FFFFFF', // Active icon circular background
-};
-
-// --- Custom Tab Bar Component ---
 const CustomTabBar = ({ state, descriptors, navigation }: BottomTabBarProps) => {
+  const { colors, theme } = useTheme();
+
+  // The COLORS object is now inside the component to access theme properties
+  const COLORS = {
+    primary: colors.primary,
+    inactive: colors.tabIconDefault,
+    background: theme === 'dark' ? '#202838' : '#FFFFFF', // Using a solid color
+    activeBackground: theme === 'dark' ? '#4B5563' : '#F3F4F6',
+  };
+
   return (
     <View style={styles.tabBarContainer}>
-      <View style={styles.tabBar}>
+      <View style={[styles.tabBar, { backgroundColor: COLORS.background, shadowColor: theme === 'dark' ? '#000' : '#2d2c2cff' }]}>
         {state.routes.map((route, index) => {
           const { options } = descriptors[route.key];
           const isFocused = state.index === index;
 
           const onPress = () => {
-            const event = navigation.emit({
-              type: 'tabPress',
-              target: route.key,
-              canPreventDefault: true,
-            });
-
+            const event = navigation.emit({ type: 'tabPress', target: route.key, canPreventDefault: true });
             if (!isFocused && !event.defaultPrevented) {
               navigation.navigate(route.name);
             }
           };
 
-          const onLongPress = () => {
-            navigation.emit({
-              type: 'tabLongPress',
-              target: route.key,
-            });
-          };
-
-          // This allows us to get the icon component from the screen options
+          const onLongPress = () => navigation.emit({ type: 'tabLongPress', target: route.key });
           const tabBarIcon = options.tabBarIcon;
           
           return (
@@ -48,12 +38,12 @@ const CustomTabBar = ({ state, descriptors, navigation }: BottomTabBarProps) => 
               key={route.key}
               accessibilityRole="button"
               accessibilityState={isFocused ? { selected: true } : {}}
-              accessibilityLabel={options.tabBarAccessibilityLabel}
               onPress={onPress}
               onLongPress={onLongPress}
               style={styles.tabBarButton}
             >
-              <View style={isFocused ? styles.activeIconContainer : styles.iconContainer}>
+              {/* This structure uses the 'activeIconContainer' style you provided */}
+              <View style={isFocused ? [styles.activeIconContainer, { backgroundColor: COLORS.activeBackground }] : styles.iconContainer}>
                 {tabBarIcon && tabBarIcon({ 
                   color: isFocused ? COLORS.primary : COLORS.inactive,
                   size: 24,
@@ -68,49 +58,29 @@ const CustomTabBar = ({ state, descriptors, navigation }: BottomTabBarProps) => 
   );
 };
 
-// --- Main Tabs Layout ---
 export default function TabLayout() {
+  const { colors } = useTheme();
+  const segments = useSegments();
+  const isChatScreen = segments.includes('[id]');
+
   return (
     <Tabs
-      // Use our custom component for the tab bar
-      tabBar={(props) => <CustomTabBar {...props} />}
-      screenOptions={{
-        headerShown: false,
-      }}
-    >
-      <Tabs.Screen
-        name="discover"
-        options={{
-          title: 'Discover',
-          tabBarIcon: ({ color, size }) => <Feather name="search" size={size} color={color} />,
-        }}
-      />
-      <Tabs.Screen
-        name="map"
-        options={{
-          title: 'Map',
-          tabBarIcon: ({ color, size }) => <Feather name="map-pin" size={size} color={color} />,
-        }}
-      />
-      <Tabs.Screen
-        name="chats"
-        options={{
-          title: 'Chats',
-          tabBarIcon: ({ color, size }) => <Feather name="message-circle" size={size} color={color} />,
-        }}
-      />
-      <Tabs.Screen
-        name="profile"
-        options={{
-          title: 'Profile',
-          tabBarIcon: ({ color, size }) => <Feather name="user" size={size} color={color} />,
-        }}
-      />
-    </Tabs>
+  tabBar={(props) => (isChatScreen ? <></> : <CustomTabBar {...props} />)}
+  screenOptions={{
+    headerShown: false,
+    tabBarActiveTintColor: colors.primary,
+    tabBarInactiveTintColor: colors.tabIconDefault,
+  }}
+>
+  <Tabs.Screen name="discover" options={{ title: 'Discover', tabBarIcon: ({ color, size }) => <Feather name="search" size={size} color={color} />, }} />
+  <Tabs.Screen name="posts" options={{ title: 'Posts', tabBarIcon: ({ color, size }) => <Feather name="message-square" size={size} color={color} />, }} />
+  <Tabs.Screen name="chats" options={{ title: 'Chats', tabBarIcon: ({ color, size }) => <Feather name="message-circle" size={size} color={color} />, }} />
+  <Tabs.Screen name="profile" options={{ title: 'Profile', tabBarIcon: ({ color, size }) => <Feather name="user" size={size} color={color} />, }} />
+</Tabs>
   );
 }
 
-// --- Styles ---
+// --- STYLESHEET UPDATED TO YOUR EXACT SPECIFICATIONS ---
 const styles = StyleSheet.create({
   tabBarContainer: {
     position: 'absolute',
@@ -126,7 +96,7 @@ const styles = StyleSheet.create({
   tabBar: {
     flexDirection: 'row',
     height: 56,
-    backgroundColor: COLORS.background,
+    // Background color is now applied dynamically in the component
     borderRadius: 35,
     justifyContent: 'space-evenly',
     alignItems: 'center',
@@ -146,8 +116,8 @@ const styles = StyleSheet.create({
   activeIconContainer: {
     width: 50,
     height: 50,
-    borderRadius: 75,
-    backgroundColor: COLORS.activeBackground,
+    borderRadius: 25, // Corrected from 75 to make it a circle
+    // Background color is now applied dynamically in the component
     justifyContent: 'center',
     alignItems: 'center',
   },

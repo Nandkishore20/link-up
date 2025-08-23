@@ -1,60 +1,8 @@
-import React, { useState, useEffect, createContext, useContext } from "react";
-import { ActivityIndicator, View } from "react-native";
+// app/_layout.tsx
 import { Stack, useRouter, useSegments } from "expo-router";
-import { onAuthStateChanged, User as FirebaseAuthUser } from "firebase/auth";
-import { doc, getDoc } from "firebase/firestore";
-import { FIREBASE_AUTH, FIREBASE_DB } from "@/firebaseConfig";
-
-// Define the complete, app-wide User Profile type
-export interface AppUser {
-  uid: string;
-  email: string | null;
-  fullName: string;
-  displayName: string;
-  bio: string;
-  interests: string[];
-  location: string;
-  avatarUrl: string;
-}
-
-interface AuthContextType {
-  user: AppUser | null;
-  loading: boolean;
-}
-const AuthContext = createContext<AuthContextType>({ user: null, loading: true });
-export const useAuth = () => useContext(AuthContext);
-
-function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<AppUser | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(FIREBASE_AUTH, async (firebaseUser: FirebaseAuthUser | null) => {
-      if (firebaseUser) {
-        const userDocRef = doc(FIREBASE_DB, "users", firebaseUser.uid);
-        const userDocSnap = await getDoc(userDocRef);
-        
-        if (userDocSnap.exists()) {
-          setUser({ uid: firebaseUser.uid, ...userDocSnap.data() } as AppUser);
-        } else {
-          // This handles the brief moment after signup but before the profile is created
-          // It keeps the user logged in so they can complete onboarding.
-          setUser({
-            uid: firebaseUser.uid,
-            email: firebaseUser.email,
-            displayName: firebaseUser.displayName || 'New User',
-          } as AppUser); // Cast as AppUser to satisfy the type
-        }
-      } else {
-        setUser(null);
-      }
-      setLoading(false);
-    });
-    return () => unsubscribe();
-  }, []);
-
-  return <AuthContext.Provider value={{ user, loading }}>{children}</AuthContext.Provider>;
-}
+import React, { useEffect } from "react";
+import { AuthProvider, useAuth } from "./context/AuthContext";
+import { ThemeProvider } from "./context/ThemeContext";
 
 function RootLayoutNav() {
   const { user, loading } = useAuth();
@@ -65,16 +13,11 @@ function RootLayoutNav() {
     if (loading) return;
 
     const inAuthGroup = segments[0] === "auth";
-    // --- FIX: Added a check to see if the user is in the main tabs group ---
-    const inTabsGroup = segments[0] === "tabs";
+    const inAppGroup = segments[0] === "tabs" || segments[0] === "profile";
 
-    if (user && !inTabsGroup) {
-      // If the user is signed in and NOT in the tabs group, redirect them there.
-      // This allows free navigation INSIDE the tabs group.
+    if (user && !inAppGroup) {
       router.replace("/tabs/discover");
     } else if (!user && !inAuthGroup) {
-      // If the user is NOT signed in and NOT in the auth group, send them to login.
-      // This allows them to navigate between login and onboarding.
       router.replace("/auth/login");
     }
   }, [user, loading, segments]);
@@ -84,16 +27,20 @@ function RootLayoutNav() {
       <Stack.Screen name="tabs" />
       <Stack.Screen name="auth" />
       <Stack.Screen name="index" />
+      <Stack.Screen 
+        name="profile/edit"
+        options={{ presentation: 'modal', headerShown: true, title: 'Edit Profile' }} 
+      />
     </Stack>
   );
 }
 
-
-
 export default function RootLayout() {
   return (
-    <AuthProvider>
-      <RootLayoutNav />
-    </AuthProvider>
+    <ThemeProvider>
+      <AuthProvider>
+        <RootLayoutNav />
+      </AuthProvider>
+    </ThemeProvider>
   );
 }
