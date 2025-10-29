@@ -1,0 +1,18 @@
+[
+    { "id": "1", "title": "Dopamine Nation", "author": "Dr. Anna Lembke", "duration": 7, "icon": "🧬", "source": "https://archive.org/download/effect-brain_202510/dopamine.m4a" },
+    { "id": "2", "title": "Your Brain on Porn", "author": "Gary Wilson", "duration": 20, "icon": "💻", "source": "https://archive.org/serve/effect-brain/effect-brain.m4a" },
+    { "id": "3", "title": "Dopamine Detox", "author": "Thibaut Meurisse", "duration": 19, "icon": "📵", "source": "https://archive.org/download/effect-brain_202510/detoxs.m4a" },
+    { "id": "4", "title": "Steal Like an Artist", "author": "Austin Kleon", "duration": 7, "icon": "🎨", "source": "https://archive.org/download/effect-brain_202510/likeart.m4a" },
+    { "id": "5", "title": "Can't Hurt Me", "author": "David Goggins", "duration": 6, "icon": "💪", "source": "https://archive.org/download/effect-brain_202510/hurtme.m4a" },
+    { "id": "6", "title": "Ego Is The Enemy", "author": "Ryan Holiday", "duration": 6, "icon": "👤", "source": "https://archive.org/download/effect-brain_202510/egos.m4a" },
+    { "id": "7", "title": "The Magic of Thinking Big", "author": "David J. Schwartz", "duration": 6, "icon": "🧠", "source": "https://archive.org/download/effect-brain_202510/tbig.m4a" },
+    { "id": "8", "title": "Atomic Habits", "author": "James Clear", "duration": 7, "icon": "⚛️", "source": "https://archive.org/download/effect-brain_202510/atomic_habit.m4a" },
+    { "id": "9", "title": "Hyperfocus", "author": "Chris Bailey", "duration": 17, "icon": "🎯", "source": "https://archive.org/download/effect-brain_202510/hyper-focus.m4a" },
+    { "id": "10", "title": "The Miracle Morning", "author": "Hal Elrod", "duration": 6, "icon": "☀️", "source": "https://archive.org/download/effect-brain_202510/morningm.m4a" },
+    { "id": "11", "title": "Hidden Potential", "author": "Adam Grant", "duration": 7, "icon": "✨", "source": "https://archive.org/download/effect-brain_202510/hidden-po.m4a" },
+    { "id": "12", "title": "The Psychology of Money", "author": "Morgan Housel", "duration": 7, "icon": "💰", "source": "https://archive.org/download/effect-brain_202510/money.m4a" },
+    { "id": "13", "title": "Made to Stick", "author": "Chip & Dan Heath", "duration": 7, "icon": "💡", "source": "https://archive.org/download/effect-brain_202510/makestick.m4a" },
+    { "id": "14", "title": "Quit Porn and Get Rich", "author": "Martin Prescott", "duration": 5, "icon": "💸", "source": "https://archive.org/download/effect-brain_202510/quit-it.m4a" },
+    { "id": "15", "title": "Think Like a Monk", "author": "Jay Shetty", "duration": 7, "icon": "🧘", "source": "https://archive.org/download/effect-brain_202510/think-like-monk.m4a" },
+    { "id": "16", "title": "Bhagavad Gita", "author": "Ancient Wisdom", "duration": 17, "icon": "🙏", "source": "https://archive.org/download/effect-brain_202510/bhagvat-gita.m4a" }
+]
